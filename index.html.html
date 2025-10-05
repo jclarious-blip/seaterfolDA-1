@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConnectSpace | Social Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CSS Variables: Dark Mode Palette --- */
+        :root {
+            --color-bg-dark: #121212;
+            --color-bg-card: #1e1e1e;
+            --color-primary: #BB86FC;
+            --color-secondary: #03DAC6;
+            --color-text-light: #ffffff;
+            --color-text-subtle: #8a8a8a;
+            --color-success: #4CAF50;
+            --color-danger: #CF6679;
+            --font-family: 'Poppins', sans-serif;
+            --color-input-bg: #2c2c2c;
+            --color-border: #333;
+        }
+
+        /* --- Global & Container Styles --- */
+        body {
+            font-family: var(--font-family);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-light);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        @keyframes fadeInScaleUp {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        #login-view {
+            max-width: 380px;
+            background-color: var(--color-bg-card);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            border: 1px solid var(--color-primary);
+            animation: fadeInScaleUp 0.8s ease-out forwards;
+        }
+
+        /* Login Input Styles */
+        .login-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .login-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .login-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: var(--color-input-bg);
+            color: var(--color-text-light);
+            border: 1px solid var(--color-border);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--color-secondary);
+            color: var(--color-bg-dark);
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #00b09c;
+        }
+
+        #app-view {
+            display: none;
+            padding: 20px 0;
+            width: 100%;
+            min-height: 100vh;
+            justify-content: center;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 24px;
+            max-width: 1200px;
+            width: 95%;
+            padding: 0 10px;
+        }
+
+        .panel {
+            background-color: var(--color-bg-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .panel h3 {
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .profile-card img#current-profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 4px solid var(--color-secondary);
+            object-fit: cover;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            color: var(--color-text-light);
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.3s, background-color 0.3s;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .nav-link:hover {
+            color: var(--color-primary);
+            background-color: #333;
+            padding-left: 10px;
+        }
+
+        .nav-link span {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        /* ------------------------------------- */
+        /* --- CORE APPLICATION INTERFACES --- */
+        /* ------------------------------------- */
+
+        /* --- 1. Feed View & Posting --- */
+        .post-input-area {
+            background-color: var(--color-bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .post-input-area textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--color-input-bg);
+            color: var(--color-text-light);
+            border: 1px solid var(--color-border);
+            margin-bottom: 10px;
+            resize: vertical;
+            font-family: var(--font-family);
+            box-sizing: border-box;
+        }
+
+        .post-input-area button {
+            padding: 10px 20px;
+            background-color: var(--color-primary);
+            color: var(--color-bg-dark);
+            border: none;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .post-input-area button:hover {
+            opacity: 0.8;
+        }
+
+        /* New Post Styling */
+        .post {
+            background-color: var(--color-bg-card);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border-left: 5px solid var(--color-secondary);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .post-author-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .post-author-name {
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .post-time {
+            font-size: 0.8em;
+            color: var(--color-text-subtle);
+            margin-left: 10px;
+        }
+
+        .post-content {
+            line-height: 1.6;
+            margin-top: 0;
+        }
+
+        /* --- 2. Friends/Suggested List Item Styling --- */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px dashed var(--color-border);
+            transition: background-color 0.2s;
+        }
+
+        .list-item:hover {
+            background-color: #242424;
+            padding-left: 10px;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid var(--color-primary);
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-handle {
+            font-size: 0.9em;
+            color: var(--color-text-subtle);
+        }
+
+        .action-buttons button {
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: var(--color-bg-dark);
+        }
+
+        .btn-secondary {
+            background-color: #444;
+            color: var(--color-text-light);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.8;
+        }
+
+        .btn-secondary:hover {
+            background-color: #666;
+        }
+
+        /* --- 3. Notifications Styling --- */
+        .notification {
+            border-left: 5px solid transparent;
+            padding: 15px;
+            transition: border-left-color 0.3s, background-color 0.3s;
+        }
+
+        .notification.unread {
+            background-color: #BB86FC15;
+            border-left-color: var(--color-primary);
+        }
+
+        .notification-content {
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 0.8em;
+            color: var(--color-text-subtle);
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* --- 4. Chat Styling (Minor update for chat list) --- */
+        .chat-friend-item {
+            border-left: 3px solid transparent;
+        }
+
+        .chat-friend-item.active {
+            border-left-color: var(--color-secondary);
+            background-color: #333;
+        }
+
+
+        /* --- AUTO ADJUSTMENT (RESPONSIVE) SECTION --- */
+        @media (max-width: 1000px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                max-width: 95%;
+            }
+
+            .profile-card {
+                padding: 15px;
+                text-align: center;
+            }
+
+            .profile-card img#current-profile-pic {
+                margin: 0 auto 10px auto;
+            }
+
+            .nav-link {
+                justify-content: center;
+                border-bottom: 1px solid #333;
+                padding: 10px 0;
+            }
+
+            .nav-link:hover {
+                padding-left: 0;
+            }
+
+            .left-column .panel:last-child {
+                display: none;
+            }
+
+            .chat-view {
+                grid-template-columns: 1fr;
+                height: 70vh;
+            }
+
+            .chat-list-panel {
+                max-height: 100px;
+            }
+
+            .chat-box-panel {
+                min-height: 400px;
+            }
+
+            .settings-tabs,
+            .settings-header,
+            .settings-content-container {
+                border-radius: 0;
+            }
+
+            .profile-pic-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-pic-preview {
+                margin: 0 auto 15px auto;
+                margin-right: 0;
+            }
+
+            .list-item {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            .user-info {
+                margin-bottom: 10px;
+            }
+
+            .action-buttons {
+                margin-top: 10px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #login-view {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .container {
+                padding: 0 5px;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+
+            .list-item .user-info img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .list-item .action-buttons button {
+                padding: 6px 10px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="login-view">
+        <h2>ConnectSpace Login 🚀</h2>
+        <form id="login-form">
+            <div class="login-group">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" name="username" value="pydev_connect" required>
+            </div>
+            <div class="login-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" name="password" value="password123" required>
+            </div>
+            <button type="submit" class="login-btn">Log In</button>
+            <div id="login-error"></div>
+            <p style="margin-top: 20px; font-size: 0.9em; color: var(--color-text-subtle);">Use 'pydev\_connect' and
+                'password123' to log in.</p>
+        </form>
+    </div>
+
+    <div id="app-view">
+        <div class="container">
+
+            <div class="left-column">
+                <div class="panel profile-card">
+                    <img id="current-profile-pic" src="" alt="User Profile Picture">
+
+                    <h3><span id="current-user-name">pydev_connect</span></h3>
+                    <p style="color: var(--color-text-subtle); margin-bottom: 20px;">ID: <span
+                            id="current-user-id">U001</span></p>
+
+                    <a class="nav-link" id="nav-home"><span>🏠</span> Home (Feed)</a>
+                    <a class="nav-link" id="nav-messages"><span>💬</span> Messages</a>
+                    <a class="nav-link" id="nav-friends"><span>👥</span> Friends</a>
+                    <a class="nav-link" id="nav-notifications"><span>🔔</span> Notifications</a>
+                    <a class="nav-link" id="nav-edit-profile"><span>⚙️</span> Account Settings</a>
+                    <a class="nav-link" id="nav-logout"
+                        style="color: var(--color-danger); margin-top: 15px;"><span>➡️</span> Log Out</a>
+                </div>
+
+                <div class="panel" style="margin-top: 24px;">
+                    <h3>Friend Requests (<span id="request-count">0</span>)</h3>
+                    <ul id="request-list" class="friend-list"></ul>
+                </div>
+            </div>
+
+            <div class="middle-column">
+
+                <div id="main-feed" class="view-content">
+                    <div class="post-input-area">
+                        <textarea id="post-text-area" placeholder="What's on your mind, pydev_connect?"
+                            rows="3"></textarea>
+                        <button id="post-button">Post Update</button>
+                    </div>
+
+                    <h3>Recent Updates</h3>
+                    <div id="feed-content-area">
+                    </div>
+
+                    <h3>Connect with Others 🔗</h3>
+                    <div class="panel">
+                        <ul id="suggested-friends-list" class="friend-list"></ul>
+                    </div>
+                </div>
+
+                <div id="chat-view" class="view-content chat-view" style="display: none;">
+                    <div class="chat-list-panel">
+                        <h3 style="padding: 15px 10px 10px 15px; margin: 0; border-bottom: 2px solid #333;">Active Chats
+                        </h3>
+                        <div id="current-chat-friends"></div>
+                    </div>
+                    <div class="chat-box-panel">
+                        <div class="chat-header">
+                            💬 Chatting with: <strong id="chat-partner-name">...select a friend...</strong>
+                        </div>
+                        <div class="chat-messages" id="chat-window">
+                            <div class="message received">Welcome to Messages! Select a friend to start chatting.</div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" placeholder="Type a message..." id="chat-input-field" disabled>
+                            <button id="send-btn" disabled>&#10148;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="friends-view" class="panel view-content" style="display: none;">
+                    <h1>Your Friends List</h1>
+                    <div id="friends-list-container"></div>
+                    <h3 style="margin-top: 30px;">People You May Know</h3>
+                    <div id="people-you-may-know"></div>
+                </div>
+
+                <div id="notifications-view" class="panel view-content" style="display: none;">
+                    <h1>Notifications</h1>
+                    <div id="notifications-list"></div>
+                </div>
+
+                <div id="profile-edit-view" class="view-content" style="display: none;">
+
+                    <div class="settings-header">
+                        <h1>Account Settings</h1>
+                    </div>
+
+                    <div class="settings-tabs">
+                        <div class="settings-tab active" data-tab="profile">Profile Details</div>
+                        <div class="settings-tab" data-tab="security">Security & Login</div>
+                    </div>
+
+                    <div class="settings-content-container">
+                        <form id="profile-edit-form">
+                            <div id="tab-profile" class="tab-pane active">
+                                <h2>Your Public Profile</h2>
+
+                                <div class="profile-pic-section">
+                                    <div class="profile-pic-preview" id="profile-pic-preview">
+                                    </div>
+                                    <div class="file-input-wrapper">
+                                        <label for="profile_pic">Upload New Picture</label>
+                                        <input type="file" id="profile_pic" name="profile_pic" accept="image/*">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="full_name">Full Name</label>
+                                    <input type="text" id="full_name" name="full_name" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="bio">Bio / About Me (Max 250 chars)</label>
+                                    <textarea id="bio" name="bio" maxlength="250" rows="3"
+                                        placeholder="Tell us a little about yourself..."></textarea>
+                                </div>
+                            </div>
+
+                            <div id="tab-security" class="tab-pane">
+                                <h2>Security & Credentials</h2>
+
+                                <div class="form-group">
+                                    <label for="username_edit">Username (@)</label>
+                                    <input type="text" id="username_edit" name="username_edit" required>
+                                    <div id="username-error" class="error-message"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="current_password">Current Password (Required to save ANY
+                                        changes)</label>
+                                    <input type="password" id="current_password" name="current_password" required>
+                                    <div id="password-current-error" class="error-message"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="new_password">New Password</label>
+                                    <input type="password" id="new_password" name="new_password"
+                                        placeholder="Leave blank to keep the same">
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm_new_password">Confirm New Password</label>
+                                    <input type="password" id="confirm_new_password" name="confirm_new_password">
+                                    <div id="password-match-error" class="error-message"></div>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button type="button" class="btn btn-cancel"
+                                    onclick="showView('main-feed')">Cancel</button>
+                                <button type="submit" class="btn btn-save">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- DATA STRUCTURES ---
+        const users = {
+            'U001': { name: 'PyDev', username: 'pydev_connect', password: 'password123', fullName: 'Jane Doe', bio: 'Tech enthusiast, amateur chef, and avid learner.', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&q=80' },
+            'U002': { name: 'CodeMaster', username: 'code_mastr', password: 'password456', img: 'https://images.unsplash.com/photo-1517423738875-5ceee55fa282?w=80&h=80&fit=crop&q=80' },
+            'U003': { name: 'DesignFlow', username: 'designflow', password: 'password789', img: 'https://images.unsplash.com/photo-1531427186611-adcb659b5147?w=80&h=80&fit=crop&q=80' },
+            'U004': { name: 'UX_Guru', username: 'uxguru', password: 'password012', img: 'https://images.unsplash.com/photo-1506794778202-dfa6704d9a42?w=80&h=80&fit=crop&q=80' },
+            'U005': { name: 'WebWizard', username: 'webwizard', password: 'password345', img: 'https://images.unsplash.com/photo-1507003211169-0a812d6ce89d?w=80&h=80&fit=crop&q=80' }
+        };
+
+        let friendships = {
+            'U001': {
+                friends: ['U002', 'U005'],
+                sent: ['U003'],
+                received: ['U004']
+            }
+        };
+
+        const notificationsData = [
+            { id: 1, content: "CodeMaster liked your latest post!", time: "5m ago", type: "like", unread: true },
+            { id: 2, content: "WebWizard commented on your profile.", time: "1h ago", type: "comment", unread: true },
+            { id: 3, content: "DesignFlow started following you.", time: "2d ago", type: "follow", unread: false }
+        ];
+
+        let posts = [
+            { id: 102, userId: 'U002', content: "Just deployed a major feature update! Feeling the rush. 💪", time: "10 minutes ago" },
+            { id: 101, userId: 'U005', content: "Need coffee. Project deadline looming. Anyone else running on fumes?", time: "3 hours ago" },
+            { id: 100, userId: 'U001', content: "Hello ConnectSpace! Excited to share my projects here.", time: "1 day ago" }
+        ];
+
+        let currentUserId = null;
+        let currentChatPartnerId = null;
+
+        // --- NAVIGATION & VIEW MANAGEMENT ---
+        function showView(viewId) {
+            document.querySelectorAll('.view-content').forEach(view => {
+                view.style.display = 'none';
+            });
+            const viewElement = document.getElementById(viewId);
+            if (viewElement) {
+                viewElement.style.display = viewId === 'chat-view' ? 'grid' : 'block';
+                if (viewId === 'chat-view') loadChatFriendsList();
+                if (viewId === 'friends-view') renderFriendsView();
+                if (viewId === 'notifications-view') renderNotificationsView();
+                if (viewId === 'profile-edit-view') showProfileEdit();
+                if (viewId === 'main-feed') renderFeed(); // Render feed every time home is clicked
+            }
+        }
+
+        // --- FEED LOGIC ---
+        function renderFeed() {
+            const feedArea = document.getElementById('feed-content-area');
+            feedArea.innerHTML = ''; // Clear existing posts
+
+            if (posts.length === 0) {
+                feedArea.innerHTML = `<p style="color: var(--color-text-subtle); padding: 20px; text-align: center;">No updates yet. Be the first to post!</p>`;
+                return;
+            }
+
+            // Sort posts by ID descending (newest first)
+            posts.sort((a, b) => b.id - a.id);
+
+            posts.forEach(post => {
+                const author = users[post.userId];
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                postElement.innerHTML = `
+                    <div class="post-header">
+                        <img class="post-author-img" src="${author.img}" alt="${author.name}">
+                        <span class="post-author-name">${author.fullName || author.name}</span>
+                        <span class="post-time">${post.time}</span>
+                    </div>
+                    <p class="post-content">${post.content}</p>
+                `;
+                feedArea.appendChild(postElement);
+            });
+        }
+
+        function handlePostUpdate() {
+            const textArea = document.getElementById('post-text-area');
+            const content = textArea.value.trim();
+
+            if (content.length === 0) {
+                alert("Please enter some content before posting.");
+                return;
+            }
+
+            const currentUser = users[currentUserId];
+            const newPost = {
+                id: Date.now(), // Use timestamp as unique ID
+                userId: currentUserId,
+                content: content,
+                time: "just now"
+            };
+
+            // Add the new post to the beginning of the array
+            posts.unshift(newPost);
+
+            // Clear the input area
+            textArea.value = '';
+
+            // Re-render the feed to show the new post
+            renderFeed();
+
+            // Set the time of the newly posted item to a relative time immediately
+            // (In a real app, this would be handled server-side)
+            setTimeout(() => {
+                newPost.time = "less than 1 minute ago";
+                renderFeed();
+            }, 1000);
+        }
+
+        // --- CONFIGURATION LOGIC (Unchanged) ---
+        function switchSettingsTab(tabName) {
+            document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.querySelector(`.settings-tab[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        function showProfileEdit() {
+            document.getElementById('profile-edit-view').style.display = 'block';
+            const currentUser = users[currentUserId];
+            document.getElementById('full_name').value = currentUser.fullName || '';
+            document.getElementById('bio').value = currentUser.bio || '';
+            const preview = document.getElementById('profile-pic-preview');
+            preview.innerHTML = `<img src="${currentUser.img}" alt="Profile Preview">`;
+            document.getElementById('profile_pic').value = null;
+            document.getElementById('username_edit').value = currentUser.username || currentUser.name;
+            document.getElementById('current_password').value = '';
+            document.getElementById('new_password').value = '';
+            document.getElementById('confirm_new_password').value = '';
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            switchSettingsTab('profile');
+        }
+
+        function handleProfileSave(event) {
+            event.preventDefault();
+            const currentPassword = document.getElementById('current_password').value;
+            const currentUser = users[currentUserId];
+
+            if (currentPassword !== currentUser.password) {
+                alert("Error: Incorrect Current Password. Please enter the correct password to save changes.");
+                document.getElementById('password-current-error').textContent = 'Incorrect current password.';
+                switchSettingsTab('security');
+                return;
+            }
+            document.getElementById('password-current-error').textContent = '';
+
+            currentUser.fullName = document.getElementById('full_name').value;
+            currentUser.bio = document.getElementById('bio').value;
+            currentUser.username = document.getElementById('username_edit').value;
+            const newPassword = document.getElementById('new_password').value;
+            if (newPassword && newPassword === document.getElementById('confirm_new_password').value) {
+                currentUser.password = newPassword;
+            }
+
+            const profilePicFile = document.getElementById('profile_pic').files[0];
+            if (profilePicFile) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const newImageUrl = e.target.result;
+                    document.getElementById('current-profile-pic').src = newImageUrl;
+                    currentUser.img = newImageUrl;
+                    loadChatFriendsList();
+                }
+                reader.readAsDataURL(profilePicFile);
+            }
+
+            alert('Profile changes saved successfully! (Simulated)');
+            showView('main-feed');
+        }
+
+        // --- Core Functions ---
+
+        function initializeApp(userId) {
+            currentUserId = userId;
+            const currentUser = users[userId];
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('app-view').style.display = 'flex';
+            document.getElementById('current-profile-pic').src = currentUser.img;
+            document.getElementById('current-user-name').textContent = currentUser.username;
+            document.getElementById('current-user-id').textContent = userId;
+            document.getElementById('post-text-area').placeholder = `What's on your mind, ${currentUser.name}?`;
+            updateDisplay();
+            showView('main-feed');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value.trim();
+            const errorElement = document.getElementById('login-error');
+            errorElement.textContent = '';
+            let loggedInUserId = null;
+            for (const userId in users) {
+                const user = users[userId];
+                if (user.username === usernameInput && user.password === passwordInput) {
+                    loggedInUserId = userId;
+                    break;
+                }
+            }
+            if (loggedInUserId) { initializeApp(loggedInUserId); } else { errorElement.textContent = 'Invalid username or password.'; }
+        }
+
+        function handleLogout() {
+            currentUserId = null;
+            document.getElementById('app-view').style.display = 'none';
+            document.getElementById('login-view').style.display = 'flex';
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-error').textContent = 'You have been logged out.';
+        }
+
+        function updateDisplay() {
+            document.getElementById('request-count').textContent = friendships[currentUserId].received.length;
+            const requestList = document.getElementById('request-list');
+            requestList.innerHTML = '';
+            friendships[currentUserId].received.forEach(id => {
+                const user = users[id];
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<div style="display:flex; align-items:center;"><img src="${user.img}" style="width:30px; height:30px; border-radius:50%; margin-right:10px;">${user.name}</div><button class="friend-btn accept" onclick="acceptFriend('${id}')">Accept</button>`;
+                requestList.appendChild(listItem);
+            });
+        }
+
+        function loadChatFriendsList() {
+            const friendListDiv = document.getElementById('current-chat-friends');
+            friendListDiv.innerHTML = '';
+            const friendIds = friendships[currentUserId].friends;
+            if (friendIds.length === 0) {
+                friendListDiv.innerHTML = '<p style="padding: 15px; color: var(--color-text-subtle);">You have no friends yet!</p>';
+                return;
+            }
+            friendIds.forEach(friendId => {
+                const friend = users[friendId];
+                const item = document.createElement('div');
+                item.className = 'chat-friend-item';
+                item.setAttribute('data-user-id', friendId);
+                item.innerHTML = `<img src="${friend.img}" alt="${friend.name}"><span class="chat-friend-name">${friend.name}</span>`;
+                item.addEventListener('click', () => openChat(friendId));
+                friendListDiv.appendChild(item);
+            });
+        }
+
+        function openChat(friendId) {
+            currentChatPartnerId = friendId;
+            const friend = users[friendId];
+            const chatWindow = document.getElementById('chat-window');
+            document.getElementById('chat-partner-name').textContent = friend.name;
+            chatWindow.innerHTML = `<div class="message received">You are now chatting with ${friend.name}.</div>
+                                    <div class="message received">Hey ${users[currentUserId].name}, let's talk about that new project!</div>`;
+            document.getElementById('chat-input-field').disabled = false;
+            document.getElementById('send-btn').disabled = false;
+            document.querySelectorAll('.chat-friend-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.chat-friend-item[data-user-id="${friendId}"]`).classList.add('active');
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function handleSendChat() {
+            const input = document.getElementById('chat-input-field');
+            const messageText = input.value.trim();
+            if (!currentChatPartnerId || !messageText) return;
+            const chatWindow = document.getElementById('chat-window');
+            const newMessage = document.createElement('div');
+            newMessage.className = 'message sent';
+            newMessage.textContent = messageText;
+            chatWindow.appendChild(newMessage);
+            input.value = '';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            setTimeout(() => {
+                const friend = users[currentChatPartnerId];
+                const reply = document.createElement('div');
+                reply.className = 'message received';
+                reply.textContent = `[${friend.name} replied] Got it! I'll look into that now.`;
+                chatWindow.appendChild(reply);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }, 1500);
+        }
+
+        function renderFriendsView() {
+            const friendIds = friendships[currentUserId].friends;
+            const friendContainer = document.getElementById('friends-list-container');
+            const suggestContainer = document.getElementById('people-you-may-know');
+            friendContainer.innerHTML = '';
+            suggestContainer.innerHTML = '';
+            if (friendIds.length > 0) {
+                friendIds.forEach(id => {
+                    const friend = users[id];
+                    friendContainer.innerHTML += `<div class="list-item"><div class="user-info"><img src="${friend.img}" alt="${friend.name}"><div><div class="user-name">${friend.fullName || friend.name}</div><div class="user-handle">@${friend.username}</div></div></div><div class="action-buttons"><button class="btn-primary" onclick="openChatAndNavigate('${id}')">Message</button><button class="btn-secondary" onclick="removeFriend('${id}')">Unfriend</button></div></div>`;
+                });
+            } else {
+                friendContainer.innerHTML = `<p style="color: var(--color-text-subtle); padding: 15px; text-align: center;">You don't have any friends yet. Add some below!</p>`;
+            }
+            const allFriendIds = new Set(friendIds.concat(friendships[currentUserId].sent, friendships[currentUserId].received));
+            for (const id in users) {
+                if (id !== currentUserId && !allFriendIds.has(id)) {
+                    const user = users[id];
+                    suggestContainer.innerHTML += `<div class="list-item"><div class="user-info"><img src="${user.img}" alt="${user.name}"><div><div class="user-name">${user.fullName || user.name}</div><div class="user-handle">@${user.username}</div></div></div><div class="action-buttons"><button class="btn-primary" onclick="sendRequest('${id}')">Add Friend</button></div></div>`;
+                }
+            }
+        }
+
+        function openChatAndNavigate(friendId) {
+            showView('chat-view');
+            setTimeout(() => openChat(friendId), 50);
+        }
+
+        function renderNotificationsView() {
+            const list = document.getElementById('notifications-list');
+            list.innerHTML = '';
+            if (notificationsData.length === 0) {
+                list.innerHTML = `<p style="color: var(--color-text-subtle); padding: 15px; text-align: center;">You have no new notifications.</p>`;
+                return;
+            }
+            notificationsData.forEach(n => {
+                list.innerHTML += `<div class="list-item notification ${n.unread ? 'unread' : ''}"><div class="notification-content">${n.content}</div><div class="notification-time">${n.time}</div></div>`;
+            });
+            setTimeout(() => { notificationsData.forEach(n => n.unread = false); }, 1000);
+        }
+
+        function sendRequest(id) {
+            friendships[currentUserId].sent.push(id);
+            alert(`Friend request sent to ${users[id].name}!`);
+            showView('friends-view');
+            updateDisplay();
+        }
+
+        function acceptFriend(id) {
+            friendships[currentUserId].received = friendships[currentUserId].received.filter(uid => uid !== id);
+            friendships[currentUserId].friends.push(id);
+            alert(`${users[id].name} is now your friend!`);
+            showView('friends-view');
+            updateDisplay();
+            loadChatFriendsList();
+        }
+
+        function removeFriend(id) {
+            if (confirm(`Are you sure you want to unfriend ${users[id].name}?`)) {
+                friendships[currentUserId].friends = friendships[currentUserId].friends.filter(uid => uid !== id);
+                alert(`${users[id].name} has been unfriended.`);
+                showView('friends-view');
+                updateDisplay();
+                loadChatFriendsList();
+            }
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function () {
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('nav-logout').addEventListener('click', handleLogout);
+
+            // Navigation Handlers
+            document.getElementById('nav-home').addEventListener('click', () => showView('main-feed'));
+            document.getElementById('nav-messages').addEventListener('click', () => showView('chat-view'));
+            document.getElementById('nav-friends').addEventListener('click', () => showView('friends-view'));
+            document.getElementById('nav-notifications').addEventListener('click', () => showView('notifications-view'));
+            document.getElementById('nav-edit-profile').addEventListener('click', () => showView('profile-edit-view'));
+
+            // Post Handler (NEW)
+            document.getElementById('post-button').addEventListener('click', handlePostUpdate);
+
+            // Chat Handlers
+            document.getElementById('send-btn').addEventListener('click', handleSendChat);
+            document.getElementById('chat-input-field').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendChat();
+                }
+            });
+
+            // Settings Handlers
+            document.getElementById('profile-edit-form').addEventListener('submit', handleProfileSave);
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => switchSettingsTab(e.target.dataset.tab));
+            });
+
+            // Profile picture change preview handler
+            document.getElementById('profile_pic').addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                const preview = document.getElementById('profile-pic-preview');
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        preview.innerHTML = `<img src="${e.target.result}" alt="Profile Preview">`;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        };
+    </script>
+</body>
+
+</html>
